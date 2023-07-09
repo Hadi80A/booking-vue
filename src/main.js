@@ -5,6 +5,12 @@ import router from './router'
 import './assets/main.css'
 import './tailwind.css'
 
+import toast from '@k90mirzaei/vue-toast';
+import '@k90mirzaei/vue-toast/dist/index.css';
+
+
+import 'mosha-vue-toastify/dist/style.css'
+
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
@@ -22,19 +28,18 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 
 library.add(fas, fab, far)
 
+import VueCookies from 'vue-cookies'
 
-
-// /* import specific icons */
-// import { faHotel,faBus,faTrain,faPlane } from '@fortawesome/free-solid-svg-icons'
-// import { faCalendar } from '@fortawesome/free-regular-svg-icons'
-
-// /* add icons to the library */
-// library.add(faHotel,faBus,faTrain,faPlane,faCalendar)
 
 
 const app = createApp(App)
 
 app.use(VCalendar, {})
+
+app.use(toast)
+
+app.use(VueCookies)
+
 
 app.component('VueDatePicker', VueDatePicker);
 

@@ -29,14 +29,14 @@
 										<div class="section text-center">
 											<h4 class="mb-4 pb-3">Log In</h4>
 											<div class="form-group">
-												<input type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail" autocomplete="off" required>
+												<input  v-model="loginPhone" name="logemail" class="form-style" placeholder="Your Phone" id="logemail" autocomplete="off" required>
 												<font-awesome-icon icon="fa-solid fa-user" class="input-icon"/>
 											</div>	
 											<div class="form-group mt-2">
-												<input type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass" autocomplete="off" required>
+												<input type="password"  v-model="loginPass" name="logpass" class="form-style" placeholder="Your Password" id="logpass" autocomplete="off" required>
 												<font-awesome-icon icon="fa-solid fa-key" class="input-icon" />
 											</div>
-											<a href="#" class="btn mt-4">submit</a>
+											<button @click="login()" class="btn mt-4">submit</button>
                             				<p class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your password?</a></p>
 				      					</div>
 			      					</div>
@@ -46,22 +46,24 @@
 										<div class="section text-center">
 											<h4 class="mb-4 pb-3">Sign Up</h4>
 											<div class="form-group">
-												<input type="text" name="logname" class="form-style" placeholder="Your Phone Number" id="logname" autocomplete="off" required>
+												<input v-model="phone" type="text" name="phone" class="form-style" placeholder="Your Phone Number" id="phone" autocomplete="off" required>
 												<font-awesome-icon icon="fa-regular fa-circle-user" class="input-icon" />
 											</div>	
 											<div class="form-group mt-2">
-												<input type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail" autocomplete="off" required>
+												<input v-model="email" type="text" name="email" class="form-style" placeholder="Your Email" id="email" autocomplete="off" required>
 												<font-awesome-icon icon="fa-solid fa-at"  class="input-icon"/>
 											</div>	
 											<div class="form-group mt-2">
-												<input type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass" autocomplete="off" required>
+                        <input type="password" name="signpass" v-model="pass" class="form-style" placeholder="Your Password" id="signpass" autocomplete="off" required>
 												<font-awesome-icon icon="fa-solid fa-fingerprint" class="input-icon " />
 											</div>
+                      
                       <div class="form-group mt-2">
-												<input type="password" name="logpass" class="form-style" placeholder="Your Password Again" id="logpass2" autocomplete="off" required>
+                        <input type="password" name="signpass2" v-model="pass2" class="form-style" placeholder="Your Password Again" id="signpass2" autocomplete="off" required>
 												<font-awesome-icon icon="fa-solid fa-check-double" class="input-icon " />
+                        <password-meter :password="pass" />
 											</div>
-											<a href="#" class="btn mt-4">submit</a>
+											<button class="btn mt-4" @click="signup()">submit</button>
 				      					</div>
 			      					</div>
 			      				</div>
@@ -76,7 +78,81 @@
 </template>
 
 <script setup>
-  import { TransitionRoot } from '@headlessui/vue'
+  import { TransitionRoot } from '@headlessui/vue';
+  import passwordMeter from "vue-simple-password-meter";
+</script>
+
+<script>
+  import { ref} from 'vue';
+  import { createToast } from 'mosha-vue-toastify'; 
+  import axios from 'axios';
+  axios.defaults.baseURL = 'https://bookingmastermind.pythonanywhere.com'; 
+
+  export default {
+      components:{
+      },
+      data: () => ({
+        email:ref('') ,
+        phone:ref('') ,
+        pass:ref('') ,
+        pass2:ref(''),
+        loginPhone:ref(''),
+        loginPass:ref(''),
+      
+      }),
+
+      methods:{
+        login(){
+           axios.post('/token/', {
+              'phone': this.loginPhone,
+              'password': this.loginPass,
+                })
+                .then((response) => {
+                  console.log(response);
+                  this.$cookies.set('refresh', response.data.refresh, { expires: '1d' });
+                  this.$cookies.set('token', response.data.access, { expires: '5m' });
+                  this.success('login successful');
+                  this.$router.go(-1)
+                })
+                .catch((err) => {
+                  this.error('username or password invalid');
+                });
+        },
+          signup(){
+            if(this.check()){
+              axios.post('/signup/', {
+                  'phone': this.phone,
+                  'email': this.email,
+                  'password1': this.pass,
+                  'password2': this.pass2,
+                })
+                .then((response) => {
+                
+                  this.success('successful');
+                })
+                .catch((err) => {
+                  err.response.data.message.forEach(msg => {
+                    this.error(msg);
+                  });
+                });
+            };
+          },
+          check(){
+            if(this.pass!==this.pass2){
+              document.getElementById('signpass').style='@apply border-red-200 border'
+              this.error("passwords not equal")
+              return false;
+            }
+            return true;
+          },
+          error(msg){
+            createToast(msg,{position:'bottom-right',type:'danger',showIcon:true,timeout:10000})
+          },
+          success(msg){
+            createToast(msg,{position:'bottom-right',type:'success',showIcon:true,timeout:10000})
+          },
+      }
+}
 </script>
 
 <style scoped>

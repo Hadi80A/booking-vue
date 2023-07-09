@@ -1,15 +1,6 @@
 <script setup>
 import { ref,watch,getCurrentInstance } from 'vue'
-const props= defineProps({
-    selected: {
-      type: Number,
-      required: true
-    },
-    count: {
-      type: Number,
-      required: true
-    },
-})
+
 const select=ref(-2);
 /*update value in parent */
 const vm = getCurrentInstance()
@@ -22,14 +13,25 @@ export default {
     components:{
     DatePicker,
 },
+props: {
+    selected: {
+      type: Number,
+      required: true
+    },
+    count: {
+      type: Number,
+      required: true
+    },
+},
     data: () => ({
-       
-        id: ref([]),
-        firstName: ref([]),
-        lastName: ref([]),
-        gender: ref([]),
-        date: ref([]),
+        id:ref(new Array(100).fill('')),
+        firstName: ref(new Array(100).fill('')),
+        lastName: ref(new Array(100).fill('')),
+        gender: ref(new Array(100).fill('')),
+        date: ref(new Array(100).fill('')),
+        count2: ref(2),
     }),
+
     methods:{
         removeDiv(n) {
            const div= document.getElementById('form-'+n);
@@ -45,23 +47,22 @@ export default {
           },
         submit(){
             this.check();
-            console.log(this.date)
         },
         check(){
-            for (var i = 0; i < this.count; i++) {
-                
-                if(this.date[i]===new Date()){
-                    this.error('oaskpoksdmo')
+            for (var i = 1; i <= this.count2; i++) {
+                if(this.date[i]=='' || this.firstName[i]===''|| this.lastName[i]==='' || this.id[i]==='' ){
+                    this.error('please fill all fields')
+                    return false
                 }
+                if((this.id[i]+'').length!=9 ){
+                    this.error('national code must be 9 digits')
+                    console.log(this.id[i])
+                    return false
+                }  
             }
         },
         add(){
-            count++;
-            this.date.push(new Date());
-            this.id.push('');
-            this.firstName.push('');
-            this.lastName.push('');
-            this.gender.push('');
+            this.count2++;
         }
     }
 }
@@ -75,7 +76,7 @@ export default {
         </button>
             
             <h1 class="text-2xl text-center pb-2">Travelers Info</h1>
-            <div :id="'form-'+i" v-for="i in count" class="flex flex-wrap md:gap-7" >
+            <div :id="'form-'+i" v-for="i in count2" class="flex flex-wrap md:gap-7" >
                 <input :id="'first-name-'+i" v-model="firstName[i]" placeholder="First Name" class="px-2 w-28 h-8 bg-gray-200 rounded-lg shadow-md"/>
                 <input :id="'last-name-'+i" v-model="lastName[i]" placeholder="Last Name" class="px-2 w-28 h-8 bg-gray-200 rounded-lg shadow-md"/>
                 <input :id="'national-code-'+i" v-model="id[i]" type="number" placeholder="National Code" class="px-2 no-spinner w-32 h-8 bg-gray-200 rounded-lg shadow-md"/>

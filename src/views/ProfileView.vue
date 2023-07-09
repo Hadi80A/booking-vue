@@ -2,33 +2,31 @@
     <div class="flex flex-col gap-2 p-10 rounded-2xl shadow-2xl shadow-blue-600 hover:shadow-blue-700 bg-white bg-opacity-90  h-full transition-all">
         <div class="row">
             <font-awesome-icon icon="fa-solid fa-font" class="icon"></font-awesome-icon>
-            <!-- <font-awesome-icon icon="fa-regular fa-address-card" flip="horizontal" class="icon"></font-awesome-icon> -->
-            <input class="input" placeholder="First Name" />
+            <input v-model="first_name" class="input" placeholder="First Name" />
         </div>
         <div class="row">
             <font-awesome-icon icon="fa-solid fa-signature" class="icon"></font-awesome-icon>
-            <!-- <font-awesome-icon icon="fa-regular fa-address-card" class="icon"></font-awesome-icon> -->
-            <input class="input" placeholder="Last Name" />
+            <input v-model="last_name" class="input" placeholder="Last Name" />
         </div>
         <div class="row">
             <font-awesome-icon icon="fa-solid fa-phone" class="icon"></font-awesome-icon>
-            <input class="input" placeholder="Phone Number" type="number" value=""/>
+            <input v-model="phone" class="input" placeholder="Phone Number"/>
         </div>
         <div class="row">
             <font-awesome-icon icon="fa-solid fa-at" class="icon"></font-awesome-icon>
-            <input class="input" placeholder="Email"/>
+            <input v-model="email" class="input" placeholder="Email"/>
         </div>
         <div class="row">
-            <DatePicker id="Birthday" v-model:value="date" placeholder="Birthday" :custom-class="'bg-gray-200 px-2 w-32 h-10 '" />
+            <DatePicker id="Birthday" v-model:value="birthdate" placeholder="Birthday" :custom-class="'bg-gray-200 px-2 w-32 h-10 '" />
 
         </div>
         <div class="row">
             <font-awesome-icon icon="fa-solid fa-map-location-dot" class="icon"></font-awesome-icon>
-            <input class="input" placeholder="Address"/>
+            <input v-model="address" class="input" placeholder="Address"/>
         </div>
 
         <div class="flex  py-1">
-            <button class="button_submit" @click="">
+            <button class="button_submit" @click="submit()">
                 <font-awesome-icon icon="fa-regular fa-paper-plane" /> Submit
             </button>
             <button class="button_cancel" @click="this.$router.go(-1)">
@@ -43,15 +41,79 @@
 
 <script>
 import DatePicker from "../components/form/DatePicker.vue";
+import axios from 'axios';
+axios.defaults.baseURL = 'https://bookingmastermind.pythonanywhere.com'; 
+
 export default {
         components:{
         DatePicker,
     },
     data: () => ({
-        date: new Date(),
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        address: '', 
+        birthdate: ''
     }),
+    mounted() {
+        this.refresh_token();
+        this.token=this.$cookies.get('token');
+
+        axios.get('/users/', {
+                },{
+                headers: {
+                 'Authorization': 'Bearer ' +this.token,
+                 }
+                },
+                )
+                .then((response) => {
+                  console.log(response)
+                })
+                .catch((err) => {
+                  console.log(err)
+                });
+    },
     methods:{
-       
+       submit(){
+        this.token=this.$cookies.get('token');
+        if(this.token==null){
+            this.refresh_token()
+            this.token=this.$cookies.get('token');
+            //this.$router.push('/login');
+        }
+        axios.put('/edit-profile/'+this.phone+'/', {
+            first_name: this.first_name,
+            last_name: this.last_name,
+            email: this.email,
+            phone: this.phone,
+            address: this.address, 
+            birthdate: this.birthdate
+                },{
+                headers: {
+                 Authorization: 'Bearer ' +this.token,
+                 }
+                },
+                )
+                .then((response) => {
+                  this.success('successful');
+                })
+                .catch((err) => {
+                  this.error('error');
+                });
+       },
+       refresh_token(){
+        axios.post('/token/refresh/', {
+            refresh: this.$cookies.get('refresh'),
+                },
+                )
+                .then((response) => {
+                    this.$cookies.set('token', response.data.access, { expires: '5m' });
+                })
+                .catch((err) => {
+                  console.log(err)
+                });
+       }
     }
 }
 </script>

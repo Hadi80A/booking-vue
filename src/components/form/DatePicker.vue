@@ -1,5 +1,5 @@
 <template>
-  <VDatePicker v-model="date" :popover="false" :enable-time-picker="false">
+  <VDatePicker v-model.string="date" :popover="false" :enable-time-picker="false" :masks="masks">
     <template #default="{ togglePopover, inputValue, inputEvents }">
       <div 
         class="flex rounded-lg overflow-hidden"
@@ -36,7 +36,7 @@ const date = ref(new Date());
 const isClicked=ref(false);
 const props= defineProps({
     value: {
-      type: Date,
+      // type: Date,
       required: true
     },
     placeholder: {
@@ -60,8 +60,10 @@ const props= defineProps({
       default: ''
     },
   })
-
+  const masks = ref({
+  modelValue: 'YYYY-MM-DD',
+});
 /*update value in parent */
 const vm = getCurrentInstance()
-watch(date,(newVal, oldVal) => vm.emit('update:value', newVal))
+watch(date,(newVal, oldVal) => {vm.emit('update:value', newVal)})
 </script>

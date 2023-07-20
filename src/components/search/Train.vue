@@ -15,10 +15,10 @@ export default {
         date: ref(new Date()),
         travelers:1,
         cities : [
-                    { id: 1, name: 'Mashhad' },
-                    { id: 2, name: 'Tehran' },
-                    { id: 3, name: 'Isfahan' },
-                    { id: 4, name: 'Shiraz' },
+                    { id: 1, name: 'New York' },
+                    { id: 2, name: 'London' },
+                    { id: 3, name: 'Tokyo' },
+                    { id: 4, name: 'Paris' },
                     { id: 5, name: 'Tabriz'},
                     { id: 6, name: 'Rasht' },
                 ]

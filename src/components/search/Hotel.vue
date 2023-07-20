@@ -3,7 +3,8 @@ import InputBox from "../form/InputBox.vue";
 import DatePicker from "../form/DatePicker.vue"
 import { ref } from "vue";
 import NumberInput from "../form/NumberInput.vue";
-
+import axios from 'axios';
+axios.defaults.baseURL = 'https://bookingmastermind.pythonanywhere.com'
 export default {
     components:{
         InputBox,
@@ -17,14 +18,41 @@ export default {
         date2: ref(new Date()),
         count: 1,
         cities : [
+                    { id: 1, name: "New York" },
+                    { id: 2, name: "Paris" },
+                    { id: 3, name: "Maldives" },
+                    { id: 4, name: "Aspen" },
+                    { id: 5, name: "Miami"},
+                    { id: 6, name: "London" },
+                ],
+    }),
+    mounted() {
+        /* axios.get('/hotel-cities/')
+              .then((response) => {
+                  console.log(response);
+                  this.data = response.data;
+                  const id=1;
+                  response.data.forEach((city) => {
+                    const mappedCity = {
+                        id: id,
+                        name: city
+                    };
+                    id++;
+                    this.cities.push(mappedCity);
+                  });
+                  console.log(this.cities);
+              })
+              .catch((err) => {
+                this.cities=[
                     { id: 1, name: 'Mashhad' },
                     { id: 2, name: 'Tehran' },
                     { id: 3, name: 'Isfahan' },
                     { id: 4, name: 'Shiraz' },
                     { id: 5, name: 'Tabriz'},
                     { id: 6, name: 'Rasht' },
-                ],
-    }),
+                ]
+              }); */
+    },
     methods:{
        
     }

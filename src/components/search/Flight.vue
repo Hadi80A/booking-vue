@@ -18,9 +18,9 @@ export default {
         cities : [
                     { id: 1, name: 'Mashhad' },
                     { id: 2, name: 'Tehran' },
-                    { id: 3, name: 'Isfahan' },
-                    { id: 4, name: 'Shiraz' },
-                    { id: 5, name: 'Tabriz'},
+                    { id: 3, name: 'Esfehan' },
+                    { id: 4, name: 'New York' },
+                    { id: 5, name: 'Paris'},
                     { id: 6, name: 'Rasht' },
                 ],
         showComponent: false

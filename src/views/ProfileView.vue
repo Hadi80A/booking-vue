@@ -25,7 +25,7 @@
             <input v-model="address" class="input" placeholder="Address"/>
         </div>
 
-        <div class="flex  py-1">
+        <div class="flex items-center justify-center py-1">
             <button class="button_submit" @click="submit()">
                 <font-awesome-icon icon="fa-regular fa-paper-plane" /> Submit
             </button>
@@ -42,6 +42,7 @@
 <script>
 import DatePicker from "../components/form/DatePicker.vue";
 import axios from 'axios';
+import { createToast } from 'mosha-vue-toastify'; 
 axios.defaults.baseURL = 'https://bookingmastermind.pythonanywhere.com'; 
 
 export default {
@@ -59,16 +60,18 @@ export default {
     mounted() {
         this.refresh_token();
         this.token=this.$cookies.get('token');
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}` 
 
         axios.get('/users/', {
-                },{
-                headers: {
-                 'Authorization': 'Bearer ' +this.token,
-                 }
-                },
+                }
                 )
                 .then((response) => {
-                  console.log(response)
+                  this.email=response.data[0].email;
+                  this.first_name=response.data[0].first_name
+                  this.last_name=response.data[0].last_name
+                  this.phone=response.data[0].phone
+                  this.birthdate=new Date(response.data[0].birthdate)
+                  this.address=response.data[0].address
                 })
                 .catch((err) => {
                   console.log(err)
@@ -80,20 +83,17 @@ export default {
         if(this.token==null){
             this.refresh_token()
             this.token=this.$cookies.get('token');
-            //this.$router.push('/login');
+            
         }
-        axios.put('/edit-profile/'+this.phone+'/', {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}` 
+        axios.put('/edit-profile/'+this.email+'/', {
             first_name: this.first_name,
             last_name: this.last_name,
             email: this.email,
             phone: this.phone,
             address: this.address, 
             birthdate: this.birthdate
-                },{
-                headers: {
-                 Authorization: 'Bearer ' +this.token,
-                 }
-                },
+                }
                 )
                 .then((response) => {
                   this.success('successful');
@@ -103,8 +103,13 @@ export default {
                 });
        },
        refresh_token(){
+        this.refresh=this.$cookies.get('refresh');
+        if(this.refresh==null){
+            this.$router.push('/login')
+            return
+        }
         axios.post('/token/refresh/', {
-            refresh: this.$cookies.get('refresh'),
+            refresh: this.refresh,
                 },
                 )
                 .then((response) => {
@@ -113,7 +118,13 @@ export default {
                 .catch((err) => {
                   console.log(err)
                 });
-       }
+       },
+       error(msg){
+            createToast(msg,{position:'bottom-right',type:'danger',showIcon:true,timeout:10000})
+          },
+        success(msg){
+            createToast(msg,{position:'bottom-right',type:'success',showIcon:true,timeout:10000})
+          },
     }
 }
 </script>
@@ -127,7 +138,7 @@ export default {
 
 }
 .input{
-    @apply px-2 w-32 h-10 bg-inherit rounded-lg ;
+    @apply px-2 w-44 h-10 bg-inherit rounded-lg ;
     @apply focus:outline-none text-black hover:text-blue-900;
 }
 .input::-webkit-inner-spin-button, 

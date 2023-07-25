@@ -3,6 +3,9 @@
  - Taillwind css
  - Responsive design
 
+![](https://github.com/Hadi80A/booking-vue/blob/master/screenshots/1.png?raw=true)
+![](https://github.com/Hadi80A/booking-vue/blob/master/screenshots/2.png?raw=true)
+![](https://github.com/Hadi80A/booking-vue/blob/master/screenshots/4.gif?raw=true)
 ## Project Setup
 
 ```sh
